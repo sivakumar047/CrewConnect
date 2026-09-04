@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>Payroll</h2>
+
+            <p class="text-muted">
+                Manage CrewConnect employee payroll
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'payroll_create' %}"
+            class="btn btn-primary"
+        >
+            + Add Payroll
+        </a>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Payroll
+                    </h6>
+
+                    <h3>
+                        ₹{{ total_payroll|floatformat:2 }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Paid Payroll
+                    </h6>
+
+                    <h3 class="text-success">
+                        ₹{{ paid_payroll|floatformat:2 }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pending Payroll
+                    </h6>
+
+                    <h3 class="text-warning">
+                        ₹{{ pending_payroll|floatformat:2 }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Payroll Table -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            {% if payrolls %}
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>Employee ID</th>
+                            <th>Employee Name</th>
+                            <th>Month</th>
+                            <th>Basic Salary</th>
+                            <th>Allowances</th>
+                            <th>Deductions</th>
+                            <th>Net Salary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for payroll in payrolls %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                {{ payroll.employee.employee_id }}
+                            </td>
+
+                            <td>
+                                {{ payroll.employee.name }}
+                            </td>
+
+                            <td>
+                                {{ payroll.month|date:"F Y" }}
+                            </td>
+
+                            <td>
+                                ₹{{ payroll.basic_salary|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                ₹{{ payroll.allowances|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                ₹{{ payroll.deductions|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹{{ payroll.net_salary|floatformat:2 }}
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                {% if payroll.status == "Paid" %}
+
+                                    <span class="badge bg-success">
+                                        Paid
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="d-flex gap-1">
+
+                                    <a
+                                        href="{% url 'payroll_update' payroll.id %}"
+                                        class="btn btn-sm btn-warning"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <a
+                                        href="{% url 'payroll_delete' payroll.id %}"
+                                        class="btn btn-sm btn-danger"
+                                    >
+                                        Delete
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <h5>No payroll records found</h5>
+
+                <p class="text-muted">
+                    There are no payroll records in CrewConnect yet.
+                </p>
+
+                <a
+                    href="{% url 'payroll_create' %}"
+                    class="btn btn-primary"
+                >
+                    Add First Payroll
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+
+                    {% if payroll %}
+
+                        <h4 class="mb-0">
+                            Edit Payroll
+                        </h4>
+
+                    {% else %}
+
+                        <h4 class="mb-0">
+                            Add Payroll
+                        </h4>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- Employee -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Employee
+                            </label>
+
+                            <select
+                                name="employee"
+                                id="employee"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Employee
+                                </option>
+
+                                {% for employee in employees %}
+
+                                <option
+                                    value="{{ employee.id }}"
+                                    {% if payroll and payroll.employee.id == employee.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ employee.employee_id }}
+                                    - {{ employee.name }}
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Month -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Payroll Month
+                            </label>
+
+                            <input
+                                type="date"
+                                name="month"
+                                class="form-control"
+                                value="{% if payroll %}{{ payroll.month|date:'Y-m-d' }}{% endif %}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Basic Salary -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Basic Salary
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="{% if payroll %}{{ payroll.basic_salary }}{% endif %}"
+                                placeholder="Employee salary"
+                                readonly
+                            >
+
+                            <small class="text-muted">
+                                Basic salary is taken from Employee salary.
+                            </small>
+
+                        </div>
+
+
+                        <!-- Allowances -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Allowances
+                            </label>
+
+                            <input
+                                type="number"
+                                name="allowances"
+                                class="form-control"
+                                step="0.01"
+                                min="0"
+                                value="{% if payroll %}{{ payroll.allowances }}{% else %}0{% endif %}"
+                                placeholder="Enter allowances"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Deductions -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Deductions
+                            </label>
+
+                            <input
+                                type="number"
+                                name="deductions"
+                                class="form-control"
+                                step="0.01"
+                                min="0"
+                                value="{% if payroll %}{{ payroll.deductions }}{% else %}0{% endif %}"
+                                placeholder="Enter deductions"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Status -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Payment Status
+                            </label>
+
+                            <select
+                                name="status"
+                                class="form-select"
+                                required
+                            >
+
+                                <option
+                                    value="Pending"
+                                    {% if not payroll or payroll.status == "Pending" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Pending
+                                </option>
+
+                                <option
+                                    value="Paid"
+                                    {% if payroll and payroll.status == "Paid" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Paid
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Buttons -->
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+
+                                {% if payroll %}
+                                    Update Payroll
+                                {% else %}
+                                    Add Payroll
+                                {% endif %}
+
+                            </button>
+
+
+                            <a
+                                href="{% url 'payroll_list' %}"
+                                class="btn btn-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

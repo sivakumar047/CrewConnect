@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+
+                    {% if designation %}
+                        <h4 class="mb-0">Edit Designation</h4>
+                    {% else %}
+                        <h4 class="mb-0">Add Designation</h4>
+                    {% endif %}
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+
+                            <label for="name" class="form-label">
+                                Designation Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-control"
+                                placeholder="Enter designation name"
+                                value="{% if designation %}{{ designation.name }}{% endif %}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            {% if designation %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Update Designation
+                                </button>
+
+                            {% else %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Add Designation
+                                </button>
+
+                            {% endif %}
+
+
+                            <a
+                                href="{% url 'designation_data' %}"
+                                class="btn btn-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

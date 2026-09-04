@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Departments</h2>
+
+            <p class="text-muted">
+                Manage all CrewConnect departments
+            </p>
+        </div>
+
+        <a
+            href="{% url 'department_create' %}"
+            class="btn btn-primary"
+        >
+            + Add Department
+        </a>
+
+    </div>
+
+
+    <!-- Department Table -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            {% if departments %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover align-middle">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Department Name</th>
+
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for department in departments %}
+
+                                <tr>
+
+                                    <!-- Serial Number -->
+
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <!-- Department Name -->
+
+                                    <td>
+                                        {{ department.name }}
+                                    </td>
+
+
+                                    <!-- Actions -->
+
+                                    <td>
+
+                                        <div class="d-flex gap-1">
+
+                                            <!-- Edit -->
+
+                                            <a
+                                                href="{% url 'department_update' department.id %}"
+                                                class="btn btn-sm btn-warning"
+                                            >
+                                                Edit
+                                            </a>
+
+
+                                            <!-- Delete -->
+
+                                            <a
+                                                href="{% url 'department_delete' department.id %}"
+                                                class="btn btn-sm btn-danger"
+                                            >
+                                                Delete
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <!-- No Departments -->
+
+                <div class="text-center py-5">
+
+                    <h5>No departments found</h5>
+
+                    <p class="text-muted">
+                        There are no departments in CrewConnect yet.
+                    </p>
+
+                    <a
+                        href="#"
+                        class="btn btn-primary"
+                    >
+                        Add First Department
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

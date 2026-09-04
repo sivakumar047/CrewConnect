@@ -1,0 +1,554 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="mb-1">
+                Leave Calendar
+            </h2>
+
+            <p class="text-muted mb-0">
+                {{ employee.name }} - Leave & Holiday Calendar
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'apply_leave' %}"
+            class="btn btn-primary"
+        >
+            + Apply Leave
+        </a>
+
+    </div>
+
+
+    <!-- Month Navigation -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <a
+                    href="?year={{ previous_year }}&month={{ previous_month }}"
+                    class="btn btn-outline-primary"
+                >
+                    ← Previous
+                </a>
+
+                <h3 class="mb-0">
+                    {{ month_name }} {{ year }}
+                </h3>
+
+                <a
+                    href="?year={{ next_year }}&month={{ next_month }}"
+                    class="btn btn-outline-primary"
+                >
+                    Next →
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Calendar -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body p-3">
+
+            <!-- Weekday Header -->
+
+            <div class="calendar-grid calendar-header">
+
+                <div>MON</div>
+                <div>TUE</div>
+                <div>WED</div>
+                <div>THU</div>
+                <div>FRI</div>
+                <div class="weekend-header">SAT</div>
+                <div class="weekend-header">SUN</div>
+
+            </div>
+
+
+            <!-- Calendar Weeks -->
+
+            {% for week in weeks %}
+
+            <div class="calendar-grid">
+
+                {% for day in week %}
+
+                    {% if day %}
+
+                        <div
+                            class="
+                                calendar-day
+                                {% if day.is_weekend %}
+                                    weekend
+                                {% endif %}
+                                {% if day.is_today %}
+                                    today
+                                {% endif %}
+                            "
+                        >
+
+                            <!-- Date -->
+
+                            <div class="date-number">
+
+                                <span>
+                                    {{ day.date|date:"d" }}
+                                </span>
+
+                                <small>
+                                    {{ day.date|date:"D" }}
+                                </small>
+
+                            </div>
+
+
+                            <!-- Weekend -->
+
+                            {% if day.is_weekend %}
+
+                                <div class="calendar-event week-off">
+                                    Week Off
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- Company Holiday -->
+
+                            {% if day.holiday %}
+
+                                <div class="calendar-event holiday">
+
+                                    <strong>
+                                        {{ day.holiday }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- Employee Leave -->
+
+                            {% for leave in day.leaves %}
+
+                                {% if leave.status == "Pending" %}
+
+                                    <div class="calendar-event pending">
+
+                                        <strong>
+                                            {{ leave.get_leave_type_display }}
+                                        </strong>
+
+                                        <small>
+                                            Pending
+                                        </small>
+
+                                    </div>
+
+                                {% elif leave.status == "Approved" %}
+
+                                    <div class="calendar-event approved">
+
+                                        <strong>
+                                            {{ leave.get_leave_type_display }}
+                                        </strong>
+
+                                        <small>
+                                            Approved
+                                        </small>
+
+                                    </div>
+
+                                {% elif leave.status == "Rejected" %}
+
+                                    <div class="calendar-event rejected">
+
+                                        <strong>
+                                            {{ leave.get_leave_type_display }}
+                                        </strong>
+
+                                        <small>
+                                            Rejected
+                                        </small>
+
+                                    </div>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+
+                            <!-- Working Day -->
+
+                            {% if not day.is_weekend and not day.holiday and not day.leaves %}
+
+                                <div class="working-day">
+                                    Working Day
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% else %}
+
+                        <!-- Empty Calendar Cell -->
+
+                        <div class="calendar-day empty">
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Legend -->
+
+    <div class="mt-3">
+
+        <span class="legend-item">
+            <span class="legend-box week-off"></span>
+            Week Off
+        </span>
+
+        <span class="legend-item">
+            <span class="legend-box holiday"></span>
+            Company Holiday
+        </span>
+
+        <span class="legend-item">
+            <span class="legend-box pending"></span>
+            Pending
+        </span>
+
+        <span class="legend-item">
+            <span class="legend-box approved"></span>
+            Approved
+        </span>
+
+        <span class="legend-item">
+            <span class="legend-box rejected"></span>
+            Rejected
+        </span>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* Calendar Grid */
+
+    .calendar-grid {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(7, minmax(0, 1fr));
+
+        gap: 6px;
+
+    }
+
+
+    /* Header */
+
+    .calendar-header {
+
+        margin-bottom: 6px;
+
+        font-weight: 600;
+
+        text-align: center;
+
+        padding: 10px 0;
+
+    }
+
+
+    .weekend-header {
+
+        color: #0d6efd;
+
+    }
+
+
+    /* Calendar Day */
+
+    .calendar-day {
+
+        min-height: 145px;
+
+        border: 1px solid #dee2e6;
+
+        border-radius: 8px;
+
+        padding: 10px;
+
+        background: #ffffff;
+
+        overflow: hidden;
+
+    }
+
+
+    .calendar-day:hover {
+
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+    }
+
+
+    /* Empty */
+
+    .calendar-day.empty {
+
+        background: #f8f9fa;
+
+        border: 1px solid #f1f1f1;
+
+    }
+
+
+    /* Weekend */
+
+    .calendar-day.weekend {
+
+        background: #f8f9fa;
+
+    }
+
+
+    /* Today */
+
+    .calendar-day.today {
+
+        border: 2px solid #0d6efd;
+
+    }
+
+
+    /* Date */
+
+    .date-number {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 10px;
+
+        font-weight: 600;
+
+        font-size: 16px;
+
+    }
+
+
+    .date-number small {
+
+        color: #6c757d;
+
+        font-size: 12px;
+
+    }
+
+
+    /* Events */
+
+    .calendar-event {
+
+        border-radius: 6px;
+
+        padding: 7px;
+
+        margin-top: 6px;
+
+        font-size: 13px;
+
+    }
+
+
+    .calendar-event strong {
+
+        display: block;
+
+    }
+
+
+    .calendar-event small {
+
+        display: block;
+
+        margin-top: 3px;
+
+    }
+
+
+    /* Week Off */
+
+    .week-off {
+
+        background: #6c757d;
+
+        color: white;
+
+    }
+
+
+    /* Company Holiday */
+
+    .holiday {
+
+        background: #cff4fc;
+
+        color: #055160;
+
+        border: 1px solid #9eeaf9;
+
+    }
+
+
+    /* Pending */
+
+    .pending {
+
+        background: #fff3cd;
+
+        color: #664d03;
+
+        border: 1px solid #ffecb5;
+
+    }
+
+
+    /* Approved */
+
+    .approved {
+
+        background: #d1e7dd;
+
+        color: #0f5132;
+
+        border: 1px solid #a3cfbb;
+
+    }
+
+
+    /* Rejected */
+
+    .rejected {
+
+        background: #f8d7da;
+
+        color: #842029;
+
+        border: 1px solid #f1aeb5;
+
+    }
+
+
+    /* Working Day */
+
+    .working-day {
+
+        color: #6c757d;
+
+        font-size: 13px;
+
+        margin-top: 5px;
+
+    }
+
+
+    /* Legend */
+
+    .legend-item {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        margin-right: 18px;
+
+        font-size: 14px;
+
+    }
+
+
+    .legend-box {
+
+        width: 18px;
+
+        height: 18px;
+
+        border-radius: 4px;
+
+        display: inline-block;
+
+        margin-right: 6px;
+
+    }
+
+
+    /* Mobile */
+
+    @media (max-width: 768px) {
+
+        .calendar-day {
+
+            min-height: 110px;
+
+            padding: 6px;
+
+        }
+
+        .calendar-event {
+
+            font-size: 11px;
+
+            padding: 5px;
+
+        }
+
+        .date-number {
+
+            font-size: 13px;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
